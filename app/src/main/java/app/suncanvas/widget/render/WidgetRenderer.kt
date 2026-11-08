@@ -409,6 +409,17 @@ class WidgetRenderer(context: Context) {
         }
 
         fun clockLayout(r: RectF) {
+            if (min(wDp, hDp) < 76f && wDp / hDp < 1.6f) {
+                // 1×1: just the time, as large as possible, plus the next sun event underneath.
+                val next = snap!!.nextSunEvent
+                val clockR = RectF(r.left, r.top, r.right, r.top + r.height() * 0.64f)
+                if (has(WidgetElement.TIME)) clock(clockR, clockR.height(), Align.CENTER, ampmBelow = false)
+                if (next != null) {
+                    val rise = next.type == SolarEventType.SUNRISE
+                    infoRow(RectF(r.left, clockR.bottom, r.right, r.bottom), if (rise) Icon.SUNRISE else Icon.SUNSET, "", fmt.time(next.instant, zone!!), if (rise) col.sunrise else col.sunset, Align.CENTER)
+                }
+                return
+            }
             val wide = wDp / hDp > 2.3f
             val sunPairs = listOfNotNull(
                 if (has(WidgetElement.SUNRISE)) Triple(Icon.SUNRISE, timeStr(sunrise), col.sunrise) else null,
@@ -656,13 +667,19 @@ class WidgetRenderer(context: Context) {
             val narrow = wDp < 230f
             val iconSize = min(br.height() * 0.8f, dp(22f))
             if (narrow) {
-                // Not enough room for a middle track: two halves, progress as a thin line underneath.
-                val trackH = if (has(WidgetElement.PROGRESS)) min(br.height() * 0.22f, dp(10f)) else 0f
-                val rowR = RectF(br.left, br.top, br.right, br.bottom - trackH)
+                // Not enough room for a middle track: two columns (icon above time), progress as a thin line.
+                val trackH = if (has(WidgetElement.PROGRESS)) min(br.height() * 0.18f, dp(8f)) else 0f
+                val rowR = RectF(br.left, br.top, br.right, br.bottom - trackH - (if (trackH > 0) dp(3f) else 0f))
                 val half = rowR.width() / 2
-                infoRow(RectF(rowR.left, rowR.top, rowR.left + half - dp(4f), rowR.bottom), Icon.SUNRISE, "", timeStr(sunrise), col.sunrise, Align.START)
-                infoRow(RectF(rowR.left + half + dp(4f), rowR.top, rowR.right, rowR.bottom), Icon.SUNSET, "", timeStr(sunset), col.sunset, Align.END)
-                if (trackH > 0) progressBar(RectF(br.left + dp(4f), br.bottom - trackH, br.right - dp(4f), br.bottom))
+                listOf(Triple(Icon.SUNRISE, timeStr(sunrise), col.sunrise), Triple(Icon.SUNSET, timeStr(sunset), col.sunset)).forEachIndexed { i, (ic, v, cc) ->
+                    val cell = RectF(rowR.left + half * i, rowR.top, rowR.left + half * (i + 1), rowR.bottom).apply { inset(dp(2f), 0f) }
+                    val showIcons = has(WidgetElement.ICONS) && cell.height() > dp(36f)
+                    val iconH = if (showIcons) min(cell.height() * 0.4f, dp(24f)) else 0f
+                    if (showIcons) icon(ic, cell.centerX(), cell.top + iconH / 2, iconH, cc)
+                    val vr = RectF(cell.left, cell.top + iconH + dp(2f), cell.right, cell.bottom)
+                    text(v, vr, vr.height() * 0.8f, Role.VALUE, col.text, Align.CENTER)
+                }
+                if (trackH > 0) progressBar(RectF(br.left + dp(6f), br.bottom - trackH, br.right - dp(6f), br.bottom))
                 return
             }
             val sideW = min(br.width() * 0.34f, dp(120f))
@@ -730,6 +747,14 @@ class WidgetRenderer(context: Context) {
                 val tr = RectF(area.left + cx * (tw + gap), y0 + cy * (th + gap), area.left + cx * (tw + gap) + tw, y0 + cy * (th + gap) + th)
                 c.drawRoundRect(tr, dp(12f), dp(12f), tileBg)
                 val inner = RectF(tr).apply { inset(dp(8f), dp(5f)) }
+                if (inner.height() < dp(40f)) {
+                    // Compact tile: icon + value only.
+                    val s2 = min(inner.height() * 0.7f, dp(18f))
+                    val showI = has(WidgetElement.ICONS)
+                    if (showI) icon(tile.icon, inner.left + s2 / 2, inner.centerY(), s2, tile.color)
+                    text(tile.value, RectF(inner.left + (if (showI) s2 + dp(5f) else 0f), inner.top, inner.right, inner.bottom), inner.height() * 0.6f, Role.VALUE, col.text, Align.START)
+                    return@forEachIndexed
+                }
                 val iconSize = min(inner.height() * 0.5f, dp(20f))
                 if (has(WidgetElement.ICONS)) icon(tile.icon, inner.left + iconSize / 2, inner.top + iconSize / 2, iconSize, tile.color)
                 val labelLeft = if (has(WidgetElement.ICONS)) inner.left + iconSize + dp(5f) else inner.left

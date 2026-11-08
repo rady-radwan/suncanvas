@@ -49,6 +49,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Path
@@ -259,11 +260,11 @@ private fun ElevationChart(vm: AppViewModel, loc: LocationEntity, date: LocalDat
     val scheme = MaterialTheme.colorScheme
     val curve = remember(loc, date) { vm.solar.elevationCurve(loc, date, 145) }
     val maxE = 90.0
-    val minE = -40.0
+    val minE = minOf(-25.0, (curve.minOfOrNull { it.second } ?: -40.0) - 4.0)
     val now = Instant.now()
     val measurer = rememberTextMeasurer()
     val labelStyle = TextStyle(fontSize = 10.sp, color = scheme.onSurfaceVariant)
-    Canvas(modifier.semantics { contentDescription = "Chart of the Sun's elevation through the day" }) {
+    Canvas(modifier.clipToBounds().semantics { contentDescription = "Chart of the Sun's elevation through the day" }) {
         fun y(e: Double) = ((maxE - e) / (maxE - minE) * size.height).toFloat()
         drawRect(sun.twilight.copy(alpha = 0.10f), Offset(0f, y(0.0)), Size(size.width, y(-18.0) - y(0.0)))
         drawLine(scheme.outline, Offset(0f, y(0.0)), Offset(size.width, y(0.0)), strokeWidth = 1.dp.toPx())
@@ -332,8 +333,8 @@ private fun MonthView(vm: AppViewModel, loc: LocationEntity, date: LocalDate, fm
     val z = loc.zone
     val first = date.withDayOfMonth(1)
     val today = Instant.now().atZone(z).toLocalDate()
-    var days by remember(loc, first) { mutableStateOf<List<SolarDay>>(emptyList()) }
-    LaunchedEffect(loc, first) { days = (0 until first.lengthOfMonth()).map { vm.solar.dayCached(loc, first.plusDays(it.toLong())) } }
+    // A month is ~30 day calculations (a few milliseconds), so it is computed directly.
+    val days = remember(loc, first) { vm.solar.range(loc, first, first.lengthOfMonth()) }
     val lead = (first.dayOfWeek.value - 1)
     val sun = LocalSunColors.current
     Row(Modifier.fillMaxWidth()) {

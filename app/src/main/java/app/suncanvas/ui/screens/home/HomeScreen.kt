@@ -334,9 +334,10 @@ private fun InfoGrid(snap: SunSnapshot, fmt: TimeFormatter) {
     val longer = !change.isNegative
     val tiles = buildList {
         add(Triple("Daylight", Durations.hm(snap.today.daylight), "${Durations.signedMinSec(change)} vs yesterday"))
-        if (snap.isDay) add(Triple("Remaining daylight", snap.remainingDaylight?.let { Durations.hm(it) } ?: "All day", "Sunset ${fmt.timeWithDay(snap.next.nextSunset, z, snap.localDate)}"))
-        else add(Triple("Until sunrise", snap.next.nextSunrise?.let { Durations.countdown(snap.now, it).removePrefix("in ") } ?: "—", "Sunrise ${fmt.timeWithDay(snap.next.nextSunrise, z, snap.localDate)}"))
-        add(Triple("Next sunrise", fmt.timeWithDay(snap.next.nextSunrise, z, snap.localDate), snap.next.nextSunrise?.let { Durations.countdown(snap.now, it) } ?: ""))
+        if (snap.isDay) add(Triple("Remaining daylight", snap.remainingDaylight?.let { Durations.hm(it) } ?: "All day", "Sunset at ${fmt.time(snap.next.nextSunset, z)}"))
+        else add(Triple("Until sunrise", snap.next.nextSunrise?.let { Durations.countdown(snap.now, it).removePrefix("in ") } ?: "—", "Sunrise at ${fmt.time(snap.next.nextSunrise, z)}"))
+        add(Triple("Next sunrise", fmt.time(snap.next.nextSunrise, z),
+            snap.next.nextSunrise?.let { "${fmt.shortDate(it.atZone(z).toLocalDate())} · ${Durations.countdown(snap.now, it)}" } ?: ""))
         add(Triple("Solar noon", fmt.time(snap.today.solarNoon, z), "Solar midnight ${fmt.time(snap.today.solarMidnight, z)}"))
         add(Triple("Golden hour · morning", window(snap.today.goldenHourMorning, fmt, z), "Sun between −4° and +6°"))
         add(Triple("Golden hour · evening", window(snap.today.goldenHourEvening, fmt, z), "Photography convention"))

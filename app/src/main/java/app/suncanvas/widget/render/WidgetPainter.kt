@@ -71,8 +71,9 @@ class WidgetPainter(private val context: Context) {
             WidgetShape.PILL, WidgetShape.CAPSULE -> {
                 val r = minSide / 2
                 val p = Path().apply { addRoundRect(full, r, r, Path.Direction.CW) }
-                val inset = if (w >= h) r * 0.55f else pad
-                val c = RectF(inset + pad * 0.3f, pad, w - inset - pad * 0.3f, h - pad)
+                val inset = if (w >= h) r * 0.45f else pad
+                val vpad = if (w >= h) pad * 0.55f else pad
+                val c = RectF(inset + pad * 0.3f, vpad, w - inset - pad * 0.3f, h - vpad)
                 ShapeGeometry(full, p, c, r)
             }
             WidgetShape.HORIZONTAL_BAR -> {

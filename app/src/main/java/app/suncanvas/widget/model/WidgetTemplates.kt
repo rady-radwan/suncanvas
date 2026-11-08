@@ -44,7 +44,7 @@ object WidgetPalettes {
     private fun c(v: Long) = v.toInt()
 
     val all = listOf(
-        WidgetPalette("Sunrise Orange", ColorSpec(c(0xFFFFFFFF), c(0xE6FFF1E0), c(0xFFFFD27A), c(0xFFFF8A4C), c(0xFFFFC46B), c(0xFFFFD27A), c(0xFFFFE0B2)), c(0xFFFF7A3D), c(0xFFFFB547)),
+        WidgetPalette("Sunrise Orange", ColorSpec(c(0xFFFFFFFF), c(0xE6FFF1E0), c(0xFFFFFFFF), c(0xFFFFF1E0), c(0xFFFFFFFF), c(0xFFFFFFFF), c(0xFFFFE0B2)), c(0xFFFF7A3D), c(0xFFFFB547)),
         WidgetPalette("Golden Hour", ColorSpec(c(0xFF2B1600), c(0xCC4A2A00), c(0xFF8A4B00), c(0xFFB3401A), c(0xFF8A4B00), c(0xFF9E5800), c(0xFFB3401A)), c(0xFFFFD27A), c(0xFFFFA94D), c(0xFF5A3300)),
         WidgetPalette("Sunset Purple", ColorSpec(c(0xFFFFFFFF), c(0xCCF3E5FF), c(0xFFFFC07A), c(0xFFFF7FA8), c(0xFFFFB0C8), c(0xFFFFC07A), c(0xFFC9A6FF)), c(0xFF3B1C5A), c(0xFFB0457B)),
         WidgetPalette("Midnight Blue", ColorSpec(c(0xFFEEF2FF), c(0xB3C7D2F5), c(0xFFFFB547), c(0xFFFF7A3D), c(0xFF7FB2FF), c(0xFFFFC14D), c(0xFF7FB2FF)), c(0xFF0B1026), c(0xFF1B2A6B)),
