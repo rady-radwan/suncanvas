@@ -21,7 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.CompareArrows
+import androidx.compose.material.icons.automirrored.rounded.CompareArrows
 import androidx.compose.material.icons.rounded.Today
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DatePicker
@@ -217,7 +217,7 @@ private fun DayView(vm: AppViewModel, loc: LocationEntity, date: LocalDate, fmt:
     }
     SectionHeader("Compare dates", action = {
         if (compare != null) TextButton(onClick = onClearCompare) { Text("Clear") }
-        else TextButton(onClick = onCompare) { Icon(Icons.Rounded.CompareArrows, null); Text(" Pick a date") }
+        else TextButton(onClick = onCompare) { Icon(Icons.AutoMirrored.Rounded.CompareArrows, null); Text(" Pick a date") }
     })
     if (compare != null) {
         val other = remember(loc, compare) { vm.solar.day(loc, compare) }

@@ -27,7 +27,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.AddToHomeScreen
+import androidx.compose.material.icons.automirrored.rounded.AddToHomeScreen
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -143,7 +143,7 @@ fun WidgetEditorScreen(designId: Long?, appWidgetId: Int?, templateId: String?, 
                         vm.save { }
                         vm.pinToHome(sc) { toast(it) }
                     }, modifier = Modifier.weight(1.4f)) {
-                        Icon(Icons.Rounded.AddToHomeScreen, null, Modifier.size(18.dp)); Text(" Add to home screen")
+                        Icon(Icons.AutoMirrored.Rounded.AddToHomeScreen, null, Modifier.size(18.dp)); Text(" Add to home screen")
                     }
                 } else {
                     Button(onClick = { vm.save { toast(it); onSavedToWidget?.invoke() } }, modifier = Modifier.fillMaxWidth()) { Text("Apply to this widget") }

@@ -51,3 +51,11 @@ jobs:
             core-solar/build/reports/tests/
             app/build/reports/tests/
           if-no-files-found: ignore
+
+      - name: Upload widget renders (visual review)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: widget-renders
+          path: app/build/widget-renders/
+          if-no-files-found: ignore

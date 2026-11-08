@@ -27,8 +27,8 @@ import androidx.compose.material.icons.rounded.MyLocation
 import androidx.compose.material.icons.rounded.NightsStay
 import androidx.compose.material.icons.rounded.PhotoCamera
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.TrendingDown
-import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material.icons.automirrored.rounded.TrendingDown
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -344,7 +344,7 @@ private fun InfoGrid(snap: SunSnapshot, fmt: TimeFormatter) {
         add(Triple("Blue hour · evening", window(snap.today.blueHourEvening, fmt, z), "Photography convention"))
     }
     val icons = listOf(
-        if (longer) Icons.Rounded.TrendingUp else Icons.Rounded.TrendingDown, Icons.Rounded.HourglassBottom, Icons.Rounded.WbSunny,
+        if (longer) Icons.AutoMirrored.Rounded.TrendingUp else Icons.AutoMirrored.Rounded.TrendingDown, Icons.Rounded.HourglassBottom, Icons.Rounded.WbSunny,
         Icons.Rounded.Schedule, Icons.Rounded.PhotoCamera, Icons.Rounded.PhotoCamera, Icons.Rounded.NightsStay, Icons.Rounded.NightsStay,
     )
     val tints = listOf(if (longer) sun.sunrise else sun.blue, sun.sunset, sun.sunrise, sun.golden, sun.golden, sun.sunset, sun.blue, sun.blue)

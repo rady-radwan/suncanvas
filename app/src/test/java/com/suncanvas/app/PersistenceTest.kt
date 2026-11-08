@@ -33,7 +33,7 @@ class PersistenceTest {
     private fun open(name: String) = Room.databaseBuilder(context, AppDatabase::class.java, name).allowMainThreadQueries().build()
 
     @Test
-    fun widgetConfigsAreIndependentAndSurviveRestart() = runBlocking {
+    fun widgetConfigsAreIndependentAndSurviveRestart() = runBlocking<Unit> {
         val name = "persist-test.db"
         context.deleteDatabase(name)
         var db = open(name)
@@ -59,7 +59,7 @@ class PersistenceTest {
     }
 
     @Test
-    fun locationsKeepTheirTimeZoneAndOrder() = runBlocking {
+    fun locationsKeepTheirTimeZoneAndOrder() = runBlocking<Unit> {
         val db = Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).allowMainThreadQueries().build()
         val a = db.locations().insert(LocationEntity(name = "Tokyo", latitude = 35.68, longitude = 139.69, timeZoneId = "Asia/Tokyo", source = LocationSource.CITY, sortOrder = 1))
         val b = db.locations().insert(LocationEntity(name = "London", latitude = 51.5, longitude = -0.12, timeZoneId = "Europe/London", source = LocationSource.CITY, sortOrder = 2))
@@ -73,7 +73,7 @@ class PersistenceTest {
     }
 
     @Test
-    fun offlineTimeZoneResolution() = runBlocking {
+    fun offlineTimeZoneResolution() = runBlocking<Unit> {
         val cities = CityDatabase(context)
         val resolver = TimeZoneResolver(cities)
         assertEquals("America/Chicago", resolver.resolve(32.78, -96.80).timeZoneId)
