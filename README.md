@@ -29,7 +29,7 @@ Every push to `main` builds a debug APK in GitHub Actions:
 2. Download the **SunCanvas-debug-apk** artifact (a zip), unzip it, and copy the `.apk` to your phone.
 3. Open it on the phone and allow "Install unknown apps" for your file manager when asked.
 
-The `widget-renders` artifact contains PNGs of every widget template at several sizes and times of day, rendered by the real widget engine in CI.
+CI also renders every widget template (at several sizes and times of day) and screenshots of the main screens with Robolectric; they are published to the `ci-renders` branch for visual review.
 
 ## Build locally
 
@@ -71,7 +71,7 @@ tools/           Scripts to rebuild the city DB, reference data and font resourc
 ## Roadmap
 
 * Phase 1–5 are implemented in this first version (core, cities, widgets, studio, calendar, reminders).
-* Next: Roborazzi screenshot tests for app screens, more languages (strings are centralised for localisation), tablet two-pane layouts, Play Store listing assets.
+* Next: move UI text into `strings.xml` so the app can be translated (formatting and dates are already locale-aware), tablet two-pane layouts, Play Store listing assets.
 
 ## Credits & licenses
 

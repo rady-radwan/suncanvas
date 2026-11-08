@@ -175,6 +175,14 @@ class WidgetRenderer(context: Context) {
             return tw
         }
 
+        /** Font size [raw] would get after fitting into [r]. */
+        fun fittedSize(raw: String, r: RectF, size: Float, role: Role): Float {
+            if (r.width() <= 1 || r.height() <= 1) return 0f
+            val p = paintFor(role, size * roleScale(role), col.text)
+            fitPaint(p, cased(raw, role), r)
+            return p.textSize
+        }
+
         fun fitPaint(p: Paint, str: String, r: RectF) {
             val fm = p.fontMetrics
             val lineH = fm.descent - fm.ascent
@@ -184,8 +192,9 @@ class WidgetRenderer(context: Context) {
         }
 
         /** Places the current time: a native live clock slot, or painted pixels for previews. */
-        fun clock(r: RectF, size: Float, align: Align, color: Int = col.text, z: java.time.ZoneId = zone!!, ampmBelow: Boolean = false) {
-            val (main, ampm) = fmt.clockParts(now, z)
+        fun clock(r: RectF, size: Float, align: Align, color: Int = col.text, z: java.time.ZoneId = zone!!, ampmBelow: Boolean = false, showAmPm: Boolean = true) {
+            val (main, ampmRaw) = fmt.clockParts(now, z)
+            val ampm = if (showAmPm) ampmRaw else null
             val sample = main.replace(Regex("[0-9]"), "8")
             val p = paintFor(Role.CLOCK, size * roleScale(Role.CLOCK), color)
             val ampmSize = p.textSize * 0.32f
@@ -288,13 +297,15 @@ class WidgetRenderer(context: Context) {
                     if (showIcon) { icon(ic!!, left + iconSize / 2, r.centerY(), iconSize, valueColor); left += iconSize + dp(8f) }
                     if (label.isEmpty()) { text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.START); return }
                     val vw = text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.END)
-                    text(label, RectF(left, r.top, right - vw - dp(8f), r.bottom), r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.START)
+                    val lr = RectF(left, r.top, right - vw - dp(8f), r.bottom)
+                    if (fittedSize(label, lr, r.height() * 0.42f, Role.LABEL) >= dp(8f)) text(label, lr, r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.START)
                 }
                 Align.END -> {
                     if (showIcon) { icon(ic!!, right - iconSize / 2, r.centerY(), iconSize, valueColor); right -= iconSize + dp(8f) }
                     if (label.isEmpty()) { text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.END); return }
                     val vw = text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.START)
-                    text(label, RectF(left + vw + dp(8f), r.top, right, r.bottom), r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.END)
+                    val lr = RectF(left + vw + dp(8f), r.top, right, r.bottom)
+                    if (fittedSize(label, lr, r.height() * 0.42f, Role.LABEL) >= dp(8f)) text(label, lr, r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.END)
                 }
                 Align.CENTER -> {
                     val valueSize = r.height() * 0.62f
@@ -413,7 +424,7 @@ class WidgetRenderer(context: Context) {
                 // 1×1: just the time, as large as possible, plus the next sun event underneath.
                 val next = snap!!.nextSunEvent
                 val clockR = RectF(r.left, r.top, r.right, r.top + r.height() * 0.64f)
-                if (has(WidgetElement.TIME)) clock(clockR, clockR.height(), Align.CENTER, ampmBelow = false)
+                if (has(WidgetElement.TIME)) clock(clockR, clockR.height(), Align.CENTER, showAmPm = false)
                 if (next != null) {
                     val rise = next.type == SolarEventType.SUNRISE
                     infoRow(RectF(r.left, clockR.bottom, r.right, r.bottom), if (rise) Icon.SUNRISE else Icon.SUNSET, "", fmt.time(next.instant, zone!!), if (rise) col.sunrise else col.sunset, Align.CENTER)

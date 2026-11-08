@@ -53,8 +53,9 @@ class WidgetPainter(private val context: Context) {
 
     fun geometry(spec: WidgetSpec, w: Float, h: Float, scale: Float): ShapeGeometry {
         val full = RectF(0f, 0f, w, h)
-        val pad = spec.padding * scale
         val minSide = min(w, h)
+        // Small widgets (1×1, 2×1) get proportionally less padding so content stays legible.
+        val pad = min(spec.padding * scale, minSide * 0.1f)
         return when (spec.shape) {
             WidgetShape.CIRCLE, WidgetShape.RING -> {
                 val b = RectF((w - minSide) / 2, (h - minSide) / 2, (w + minSide) / 2, (h + minSide) / 2)
