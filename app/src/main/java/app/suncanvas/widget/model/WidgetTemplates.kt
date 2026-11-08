@@ -187,7 +187,7 @@ object WidgetTemplates {
             "golden_hour", "Golden Hour", "When the warm light starts and ends today.", WidgetSizeClass.WIDE,
             WidgetSpec(
                 templateId = "golden_hour", name = "Golden Hour", layout = WidgetLayout.GOLDEN,
-                background = BackgroundSpec(type = BackgroundType.SUNRISE, angle = 100f),
+                background = BackgroundSpec(type = BackgroundType.GRADIENT, color = c(0xFFFFE2A6), color2 = c(0xFFFFA65C), angle = 115f),
                 colors = WidgetPalettes.all[1].colors,
                 elements = setOf(GOLDEN_HOUR, CITY, SUNSET),
                 typography = TypographySpec(font = WidgetFont.PLAYFAIR),
@@ -269,7 +269,7 @@ object WidgetTemplates {
                 shape = WidgetShape.CAPSULE,
                 background = BackgroundSpec(type = BackgroundType.GRADIENT, color = c(0xFFFF7A3D), color2 = c(0xFFFFB547), angle = 0f),
                 colors = WidgetPalettes.all[0].colors,
-                elements = setOf(NEXT_EVENT, ICONS, COUNTDOWN_SUNSET),
+                elements = setOf(NEXT_EVENT, ICONS),
                 typography = TypographySpec(font = WidgetFont.NUNITO, weight = FontWeightChoice.BOLD),
             ),
         ),

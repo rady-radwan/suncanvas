@@ -110,10 +110,12 @@ class WidgetPainter(private val context: Context) {
         val layerPaint = Paint().apply { alpha = (bg.opacity.coerceIn(0f, 1f) * 255).toInt() }
         val save = canvas.saveLayer(b, layerPaint)
         paintFill(canvas, bg, b, scale, skyElevation, spec.decorOpacity)
-        // Mask to the shape with anti-aliasing.
-        val mask = Paint(Paint.ANTI_ALIAS_FLAG).apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN) }
+        // Mask to the shape with anti-aliasing: clear everything outside the path. (DST_IN through
+        // drawPath would only touch pixels inside the path, leaving the corners filled.)
+        val clearOutside = Paint(Paint.ANTI_ALIAS_FLAG).apply { xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT) }
+        val inverse = Path(path).apply { fillType = Path.FillType.INVERSE_WINDING }
+        canvas.drawPath(inverse, clearOutside)
         if (spec.shape == WidgetShape.RING) {
-            canvas.drawPath(path, mask)
             // Hollow out the centre so the background reads as a ring (wallpaper shows through).
             val inset = min(b.width(), b.height()) * 0.17f
             val inner = RectF(b).apply { inset(inset, inset) }
@@ -122,8 +124,6 @@ class WidgetPainter(private val context: Context) {
                 alpha = 215
                 xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
             })
-        } else {
-            canvas.drawPath(path, mask)
         }
         canvas.restoreToCount(save)
     }

@@ -144,7 +144,7 @@ class WidgetRenderer(context: Context) {
             val cs = if (role == Role.LABEL) t.labelCase else t.case
             return when (cs) {
                 TextCase.AS_IS -> text
-                TextCase.UPPER -> text.uppercase(Locale.getDefault())
+                TextCase.UPPER -> text.split(' ').joinToString(" ") { w -> if (w.any { it.isDigit() }) w else w.uppercase(Locale.getDefault()) }
                 TextCase.LOWER -> text.lowercase(Locale.getDefault())
                 TextCase.TITLE -> text.split(' ').joinToString(" ") { w -> w.lowercase().replaceFirstChar { it.titlecase(Locale.getDefault()) } }
             }
@@ -286,11 +286,13 @@ class WidgetRenderer(context: Context) {
             when (align) {
                 Align.START -> {
                     if (showIcon) { icon(ic!!, left + iconSize / 2, r.centerY(), iconSize, valueColor); left += iconSize + dp(8f) }
+                    if (label.isEmpty()) { text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.START); return }
                     val vw = text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.END)
                     text(label, RectF(left, r.top, right - vw - dp(8f), r.bottom), r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.START)
                 }
                 Align.END -> {
                     if (showIcon) { icon(ic!!, right - iconSize / 2, r.centerY(), iconSize, valueColor); right -= iconSize + dp(8f) }
+                    if (label.isEmpty()) { text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.END); return }
                     val vw = text(value, RectF(left, r.top, right, r.bottom), r.height() * 0.62f, Role.VALUE, col.text, Align.START)
                     text(label, RectF(left + vw + dp(8f), r.top, right, r.bottom), r.height() * 0.42f, Role.LABEL, col.secondaryText, Align.END)
                 }
@@ -344,6 +346,20 @@ class WidgetRenderer(context: Context) {
             }
 
             if (horizontalSun && sunItems.isNotEmpty()) {
+                val cellDp = wDp / sunItems.size
+                if (cellDp < 100f) {
+                    // Narrow cells (e.g. 2×1): icon above a large time, filling the widget.
+                    sunItems.forEachIndexed { i, (ic, _, v) ->
+                        val cw = r.width() / sunItems.size
+                        val cell = RectF(r.left + cw * i, r.top, r.left + cw * (i + 1), r.bottom).apply { inset(dp(3f), 0f) }
+                        val showIcons = has(WidgetElement.ICONS) && cell.height() > dp(40f)
+                        val iconH = if (showIcons) min(cell.height() * 0.42f, dp(26f)) else 0f
+                        if (showIcons) icon(ic, cell.centerX(), cell.top + iconH / 2 + cell.height() * 0.05f, iconH, v.second)
+                        val vr = RectF(cell.left, cell.top + iconH + cell.height() * 0.06f, cell.right, cell.bottom)
+                        text(v.first, vr, vr.height() * 0.75f, Role.VALUE, col.text, Align.CENTER)
+                    }
+                    return
+                }
                 rows += Row(1.6f) { rr ->
                     val n = sunItems.size
                     val cw = rr.width() / n
@@ -382,6 +398,7 @@ class WidgetRenderer(context: Context) {
             c.drawRoundRect(track, th / 2, th / 2, p)
             if (fraction != null) {
                 val fill = RectF(track.left, track.top, track.left + track.width() * fraction, track.bottom)
+                p.color = Color.WHITE // shaders are multiplied by the paint alpha
                 p.shader = painter.linear(track, 0f, intArrayOf(col.sunrise, col.sunset))
                 c.drawRoundRect(fill, th / 2, th / 2, p)
                 p.shader = null
@@ -519,6 +536,7 @@ class WidgetRenderer(context: Context) {
             val isDay = frac != null
             val nightFrac = if (!isDay) nightProgress() else null
             val f = frac ?: nightFrac ?: 0f
+            p.color = Color.WHITE // shaders are multiplied by the paint alpha
             p.shader = android.graphics.SweepGradient(cx, cy,
                 if (isDay) intArrayOf(col.sunrise, col.arc, col.sunset, col.sunrise) else intArrayOf(col.accent, col.accent.alpha(0.6f), col.accent),
                 null)
@@ -635,8 +653,19 @@ class WidgetRenderer(context: Context) {
                 }
                 text(label, lr, lr.height() * 0.8f, Role.LABEL, col.secondaryText, Align.CENTER)
             }
-            val sideW = min(br.width() * 0.32f, dp(110f))
+            val narrow = wDp < 230f
             val iconSize = min(br.height() * 0.8f, dp(22f))
+            if (narrow) {
+                // Not enough room for a middle track: two halves, progress as a thin line underneath.
+                val trackH = if (has(WidgetElement.PROGRESS)) min(br.height() * 0.22f, dp(10f)) else 0f
+                val rowR = RectF(br.left, br.top, br.right, br.bottom - trackH)
+                val half = rowR.width() / 2
+                infoRow(RectF(rowR.left, rowR.top, rowR.left + half - dp(4f), rowR.bottom), Icon.SUNRISE, "", timeStr(sunrise), col.sunrise, Align.START)
+                infoRow(RectF(rowR.left + half + dp(4f), rowR.top, rowR.right, rowR.bottom), Icon.SUNSET, "", timeStr(sunset), col.sunset, Align.END)
+                if (trackH > 0) progressBar(RectF(br.left + dp(4f), br.bottom - trackH, br.right - dp(4f), br.bottom))
+                return
+            }
+            val sideW = min(br.width() * 0.34f, dp(120f))
             val leftR = RectF(br.left, br.top, br.left + sideW, br.bottom)
             val rightR = RectF(br.right - sideW, br.top, br.right, br.bottom)
             infoRow(leftR, Icon.SUNRISE, "", timeStr(sunrise), col.sunrise, Align.START)
@@ -712,9 +741,17 @@ class WidgetRenderer(context: Context) {
         fun multiCity(r: RectF) {
             val cities = listOfNotNull(city) + data.others
             val minRow = dp(30f)
-            val n = max(1, min(cities.size, (r.height() / minRow).toInt()))
-            val rowH = min(r.height() / n, dp(52f))
-            var y = r.top + (r.height() - rowH * n) / 2
+            var area = r
+            if (hDp > 200f && (cities.size * 52f) < hDp - 40f) {
+                val hh = dp(30f)
+                val title = if (has(WidgetElement.SUNRISE) || has(WidgetElement.SUNSET)) "Sunrise & sunset" else "World clock"
+                text(title, RectF(r.left, r.top, r.centerX() + r.width() * 0.2f, r.top + hh), hh * 0.6f, Role.TITLE, col.text, Align.START)
+                text(fmt.date(now, zone!!), RectF(r.centerX(), r.top, r.right, r.top + hh), hh * 0.45f, Role.LABEL, col.secondaryText, Align.END)
+                area = RectF(r.left, r.top + hh + dp(6f), r.right, r.bottom)
+            }
+            val n = max(1, min(cities.size, (area.height() / minRow).toInt()))
+            val rowH = min(area.height() / n, dp(52f))
+            var y = area.top + (area.height() - rowH * n) / 2
             val divider = Paint().apply { color = col.text.alpha(0.10f * spec.decorOpacity); strokeWidth = dp(1f) }
             cities.take(n).forEachIndexed { i, wc ->
                 val row = RectF(r.left, y, r.right, y + rowH)
@@ -831,7 +868,7 @@ class WidgetRenderer(context: Context) {
             if (showDaylight) {
                 val br = RectF(r.left, r.bottom - bottomH, r.right, r.bottom)
                 val label = "${Durations.hm(snap!!.today.daylight)} of daylight  ·  ${Durations.signedMinSec(snap.daylightChange)}"
-                text(label, br, br.height() * 0.6f, Role.LABEL, col.secondaryText, Align.CENTER)
+                text(label, br, br.height() * 0.6f, Role.VALUE, col.secondaryText, Align.CENTER)
             }
         }
 
@@ -839,7 +876,7 @@ class WidgetRenderer(context: Context) {
             val next = snap!!.nextSunEvent
             val isRise = next?.type == SolarEventType.SUNRISE
             val color = if (isRise) col.sunrise else col.sunset
-            val wide = wDp / hDp > 2.4f
+            val wide = wDp / hDp > 2.4f || (hDp < 90f && wDp / hDp > 1.6f)
             if (next == null) {
                 text(if (snap.isDay) "Midnight sun" else "Polar night", r, r.height() * 0.4f, Role.TITLE, col.text, Align.CENTER)
                 return
