@@ -65,7 +65,9 @@ jobs:
       - name: Publish widget renders to the ci-renders branch
         if: always() && github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          if [ -d app/build/widget-renders ] && [ "$(ls -A app/build/widget-renders)" ]; then
+          mkdir -p app/build/widget-renders
+          if [ -d app/build/screens ]; then cp -r app/build/screens app/build/widget-renders/screens; fi
+          if [ "$(ls -A app/build/widget-renders)" ]; then
             cd app/build/widget-renders
             git init -q -b ci-renders
             git config user.name "github-actions"
