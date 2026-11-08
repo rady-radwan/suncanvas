@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generated: live text for widgets in space_grotesk 400. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextClock
+        android:id="@+id/live_clock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/space_grotesk_400"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="#FFFFFFFF"
+        android:textSize="32sp" />
+
+    <Chronometer
+        android:id="@+id/live_chrono"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/space_grotesk_400"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textColor="#FFFFFFFF"
+        android:textSize="24sp"
+        android:visibility="gone" />
+</FrameLayout>

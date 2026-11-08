@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SunCanvas mark. Source: branding/suncanvas-icon.svg -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="0.86" android:scaleY="0.86" android:pivotX="54" android:pivotY="54">
+        <path android:pathData="M73.28,76.98 A30,30 0 1,1 83.34,60.24" android:strokeColor="#FFFFFFFF" android:strokeWidth="3.4" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M37.98,53.75 L34.51,51.75 M44.75,46.98 L42.75,43.51 M54.00,44.50 L54.00,39.50 M63.25,46.98 L65.25,43.51 M70.02,53.75 L73.49,51.75" android:strokeColor="#FFFFFFFF" android:strokeWidth="2.6" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M39.50,63 A14.5,14.5 0 0,1 68.50,63 Z" android:fillColor="#FFFFFFFF" />
+        <path android:pathData="M29,64.2 Q56,57.6 89,67.2" android:strokeColor="#FFFFFFFF" android:strokeWidth="3" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M36,70 Q56,65.6 79,71.6" android:strokeColor="#FFFFFFFF" android:strokeWidth="2.2" android:strokeLineCap="round" android:fillColor="#00000000" android:strokeAlpha="0.85" />
+        <path android:pathData="M54.00,28.50 L54.00,25.00 M79.50,54.00 L83.00,54.00 M28.50,54.00 L25.00,54.00" android:strokeColor="#FFFFFFFF" android:strokeWidth="2.4" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M54,56 L44.99,49.69" android:strokeColor="#FFFFFFFF" android:strokeWidth="3.2" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M54,56 L68.84,46.73" android:strokeColor="#FFFFFFFF" android:strokeWidth="2.6" android:strokeLineCap="round" android:fillColor="#00000000" />
+        <path android:pathData="M51,56 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0" android:fillColor="#FFFFFFFF" />
+    </group>
+</vector>

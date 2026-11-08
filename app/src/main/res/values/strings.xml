@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name is generated from gradle.properties (suncanvas.appName) so the brand can be renamed in one place. -->
+    <string name="widget_label_small">Sun · compact (2×1)</string>
+    <string name="widget_label_square">Sun · square (2×2)</string>
+    <string name="widget_label_wide">Sun · wide (4×2)</string>
+    <string name="widget_label_large">Sun · large (4×4)</string>
+    <string name="widget_desc_small">Sunrise and sunset at a glance. Resizable, fully customizable.</string>
+    <string name="widget_desc_square">Solar dial, progress ring or compact icon. Resizable.</string>
+    <string name="widget_desc_wide">Clock with sunrise and sunset, arcs, bars and more. Resizable.</string>
+    <string name="widget_desc_large">Full solar dashboard or multiple cities. Resizable.</string>
+    <string name="widget_configure_title">Design widget</string>
+</resources>
