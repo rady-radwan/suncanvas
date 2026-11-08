@@ -15,5 +15,5 @@
     android:initialLayout="@layout/glance_default_loading_layout"
     android:previewImage="@drawable/widget_preview_square"
     android:previewLayout="@layout/widget_preview_square"
-    android:configure="com.suncanvas.app.widget.WidgetConfigActivity"
+    android:configure="app.suncanvas.widget.WidgetConfigActivity"
     android:widgetFeatures="reconfigurable|configuration_optional" />

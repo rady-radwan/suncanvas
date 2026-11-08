@@ -16,7 +16,7 @@
 ## 3. Package layout (`:app`)
 
 ```
-com.suncanvas.app
+app.suncanvas
 ├── SunCanvasApplication.kt     AppContainer (manual DI, lazy singletons)
 ├── MainActivity.kt             Theme selection (incl. sunrise/sunset auto-theme), widget tap handling
 ├── core/                       TimeFormatter (explicit zones, 12/24 h), durations, distance

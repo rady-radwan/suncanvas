@@ -11,7 +11,7 @@ suncanvas.versionName=0.1.0
 
 * `appName` generates the `app_name` string resource and `BuildConfig.BRAND_NAME` (used in the UI). Debug builds show "<name> Debug" and install side by side (`.debug` suffix).
 * Changing `applicationId` creates a separate app on the device; do it before publishing.
-* The Kotlin package (`com.suncanvas.app`) is internal and does not need to change.
+* The Kotlin package (`app.suncanvas`) is internal and does not need to change.
 
 ## Logo
 

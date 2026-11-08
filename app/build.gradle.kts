@@ -12,7 +12,7 @@ val brandAppId = providers.gradleProperty("suncanvas.applicationId").getOrElse("
 val brandName = providers.gradleProperty("suncanvas.appName").getOrElse("SunCanvas")
 
 android {
-    namespace = "com.suncanvas.app"
+    namespace = "app.suncanvas"
     compileSdk = 35
 
     defaultConfig {
