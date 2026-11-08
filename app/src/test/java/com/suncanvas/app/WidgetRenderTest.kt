@@ -1,6 +1,5 @@
 package com.suncanvas.app
 
-import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import androidx.test.core.app.ApplicationProvider
@@ -34,7 +33,7 @@ import java.time.Instant
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
-@Config(sdk = [34], application = Application::class, qualifiers = "xxhdpi")
+@Config(sdk = [34], qualifiers = "xxhdpi")
 class WidgetRenderTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()

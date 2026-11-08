@@ -1,6 +1,5 @@
 package com.suncanvas.app
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
@@ -25,7 +24,7 @@ import org.robolectric.annotation.Config
  * These tests close and reopen the on-disk database to simulate a reboot.
  */
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [34], application = Application::class)
+@Config(sdk = [34])
 class PersistenceTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
