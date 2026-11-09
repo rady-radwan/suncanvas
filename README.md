@@ -1,6 +1,6 @@
-<p align="center"><img src="branding/suncanvas-icon-512.png" width="128" alt="SunCanvas logo"></p>
+<p align="center"><img src="branding/suncanvas-icon-512.png" width="128" alt="DayArc logo"></p>
 
-# SunCanvas — Sunrise, Sunset & Widget Studio for Android
+# DayArc — Sunrise, Sunset & Widget Studio for Android
 
 Accurate sunrise, sunset and daylight for any place on Earth — calculated on the phone, offline — plus a Widget Studio for designing beautiful, independent home-screen widgets.
 
@@ -25,9 +25,12 @@ Accurate sunrise, sunset and daylight for any place on Earth — calculated on t
 
 Every push to `main` builds a debug APK in GitHub Actions:
 
-1. Open the repository → **Actions** → latest **Android build** run.
-2. Download the **SunCanvas-debug-apk** artifact (a zip), unzip it, and copy the `.apk` to your phone.
-3. Open it on the phone and allow "Install unknown apps" for your file manager when asked.
+Every push to `main` publishes the latest debug APK:
+
+* **On your phone:** repository → **Releases** → **DayArc debug build** → `DayArc-debug.apk`.
+* Or: **Actions** → latest **Android build** run → **DayArc-debug-apk** artifact (a zip).
+
+Open the APK on the phone and allow "Install unknown apps" when asked.
 
 CI also renders every widget template (at several sizes and times of day) and screenshots of the main screens with Robolectric; they are published to the `ci-renders` branch for visual review.
 

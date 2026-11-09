@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SunCanvas"
+rootProject.name = "DayArc"
 include(":app")
 include(":core-solar")

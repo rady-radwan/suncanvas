@@ -1,5 +1,6 @@
 package app.suncanvas.ui.screens.widgets
 
+import app.suncanvas.BuildConfig
 import android.app.Application
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -127,7 +128,7 @@ class WidgetEditorViewModel(
         val context = getApplication<Application>()
         val mgr = AppWidgetManager.getInstance(context)
         if (!mgr.isRequestPinAppWidgetSupported) {
-            onResult("Your launcher doesn't support adding widgets from apps. Long-press the home screen → Widgets → SunCanvas.")
+            onResult("Your launcher doesn't support adding widgets from apps. Long-press the home screen → Widgets → ${BuildConfig.BRAND_NAME}.")
             return
         }
         viewModelScope.launch {

@@ -1,5 +1,6 @@
 package app.suncanvas.data.cities
 
+import app.suncanvas.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -40,7 +41,7 @@ class OnlineGeocoder {
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 connectTimeout = 8000
                 readTimeout = 8000
-                setRequestProperty("User-Agent", "SunCanvas-Android")
+                setRequestProperty("User-Agent", "${BuildConfig.BRAND_NAME}-Android")
             }
             try {
                 if (conn.responseCode !in 200..299) error("HTTP ${conn.responseCode}")

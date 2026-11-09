@@ -127,7 +127,7 @@ fun SettingsScreen(vm: AppViewModel, onReminders: () -> Unit, onAbout: () -> Uni
 
             Group("Data")
             Item(Icons.Rounded.Upload, "Export backup", "Saved cities, widget designs, reminders and preferences") {
-                exporter.launch("suncanvas-backup-${LocalDate.now()}.json")
+                exporter.launch("${BuildConfig.BRAND_NAME.lowercase()}-backup-${LocalDate.now()}.json")
             }
             Item(Icons.Rounded.Download, "Import backup", "Merge a backup file into this device") { importer.launch(arrayOf("application/json", "text/plain", "*/*")) }
             Item(Icons.Rounded.Delete, "Clear calculation cache", "Cached results are recomputed on demand") {

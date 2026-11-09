@@ -1,5 +1,6 @@
 package app.suncanvas.ui.components
 
+import app.suncanvas.BuildConfig
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -42,7 +43,7 @@ fun rememberLocationRefresher(vm: AppViewModel, onResult: (LocationResult) -> Un
             title = { Text("Use your location?") },
             text = {
                 Text(
-                    "SunCanvas uses your location once, when you ask, to calculate sunrise and sunset where you are. " +
+                    "${BuildConfig.BRAND_NAME} uses your location once, when you ask, to calculate sunrise and sunset where you are. " +
                         "Approximate location is enough. It is never tracked in the background, and your coordinates are " +
                         "stored only on this phone."
                 )

@@ -1,4 +1,4 @@
-# SunCanvas design system
+# DayArc design system
 
 Calm, premium and focused on light. The interface should feel like looking at the sky: dark navy nights, warm white days, golden light as the accent.
 

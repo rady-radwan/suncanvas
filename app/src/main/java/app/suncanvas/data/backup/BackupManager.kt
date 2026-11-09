@@ -1,5 +1,6 @@
 package app.suncanvas.data.backup
 
+import app.suncanvas.BuildConfig
 import android.net.Uri
 import app.suncanvas.AppContainer
 import app.suncanvas.data.db.LocationEntity
@@ -15,7 +16,7 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 data class BackupFile(
-    val format: String = "suncanvas-backup",
+    val format: String = "dayarc-backup",
     val version: Int = 1,
     val exportedAt: Long = System.currentTimeMillis(),
     val locations: List<BackupLocation> = emptyList(),
@@ -73,7 +74,7 @@ class BackupManager(private val c: AppContainer) {
     suspend fun import(uri: Uri): ImportSummary = withContext(Dispatchers.IO) {
         val text = c.appContext.contentResolver.openInputStream(uri)?.use { it.readBytes().decodeToString() } ?: error("Could not open file")
         val file = json.decodeFromString(BackupFile.serializer(), text)
-        require(file.format == "suncanvas-backup") { "This is not a SunCanvas backup file" }
+        require(file.format in setOf("dayarc-backup", "suncanvas-backup")) { "This is not a ${BuildConfig.BRAND_NAME} backup file" }
         val existing = c.locations.getAll()
         var addedLocations = 0
         file.locations.forEach { b ->

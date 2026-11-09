@@ -1,4 +1,4 @@
-# SunCanvas — Architecture
+# DayArc — Architecture
 
 ## 1. Goals that shaped the design
 
@@ -17,7 +17,7 @@
 
 ```
 app.suncanvas
-├── SunCanvasApplication.kt     AppContainer (manual DI, lazy singletons)
+├── DayArcApplication.kt     AppContainer (manual DI, lazy singletons)
 ├── MainActivity.kt             Theme selection (incl. sunrise/sunset auto-theme), widget tap handling
 ├── core/                       TimeFormatter (explicit zones, 12/24 h), durations, distance
 ├── data/
@@ -38,7 +38,7 @@ app.suncanvas
 └── widget/
     ├── model/                  WidgetSpec (serializable design), 21 templates, 12 palettes
     ├── render/                 WidgetRenderer + WidgetPainter (shared by widgets and previews)
-    ├── SunCanvasWidget.kt      Glance widget (bitmap face + live TextClock/Chronometer slots)
+    ├── DayArcWidget.kt      Glance widget (bitmap face + live TextClock/Chronometer slots)
     ├── WidgetReceivers.kt      4 picker entries, updater, pin-result receiver
     ├── WidgetScheduler.kt      WorkManager: event-boundary job + periodic job
     └── WidgetConfigActivity.kt Per-widget editor launched by the launcher
@@ -73,7 +73,7 @@ State flows one way: Room/DataStore `Flow`s → `AppViewModel` `StateFlow`s → 
 
 Home-screen widgets are `RemoteViews` hosted by the launcher: only a small set of views is allowed, custom `View`/`Canvas` drawing is impossible, `setTypeface` is not available, wallpaper blur is not available, and apps cannot update widgets every second.
 
-SunCanvas therefore splits every widget into two layers:
+DayArc therefore splits every widget into two layers:
 
 1. **A bitmap "face"** drawn by `WidgetRenderer` with `android.graphics.Canvas`: background (solid, gradients, glass approximation, scenes, photos with crop/brightness/opacity, live sky), shape mask (rounded/pill/circle/oval/ring/bar/corner accent, anti-aliased), borders, arcs, rings, progress, icons and **all static text in any bundled font** with letter-spacing, case and shadows. This gives full design freedom and pixel-identical previews in Widget Studio (the editor renders with the same code).
 2. **Native live views** positioned exactly over reserved "slots" of the face:

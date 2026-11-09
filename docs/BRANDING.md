@@ -1,10 +1,10 @@
-# Renaming / rebranding SunCanvas
+# Renaming / rebranding DayArc
 
 All brand values are in one place: **`gradle.properties`**
 
 ```properties
-suncanvas.applicationId=com.suncanvas.app   # Play Store / install identity
-suncanvas.appName=SunCanvas                 # launcher label, onboarding, About screen
+suncanvas.applicationId=com.dayarc.app     # Play Store / install identity
+suncanvas.appName=DayArc              # launcher label, onboarding, About screen
 suncanvas.versionCode=1
 suncanvas.versionName=0.1.0
 ```

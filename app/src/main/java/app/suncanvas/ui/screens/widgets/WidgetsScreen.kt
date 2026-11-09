@@ -1,5 +1,6 @@
 package app.suncanvas.ui.screens.widgets
 
+import app.suncanvas.BuildConfig
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -76,7 +77,7 @@ fun WidgetsScreen(onNewFromTemplate: (String) -> Unit, onEditDesign: (Long) -> U
                             Icon(Icons.Rounded.Widgets, null, tint = MaterialTheme.colorScheme.primary)
                             Spacer(Modifier.width(Spacing.md))
                             Text(
-                                "No SunCanvas widgets yet. Pick a design below and tap \"Add to home screen\", or long-press your home screen → Widgets → SunCanvas.",
+                                "No ${BuildConfig.BRAND_NAME} widgets yet. Pick a design below and tap \"Add to home screen\", or long-press your home screen → Widgets → ${BuildConfig.BRAND_NAME}.",
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         }

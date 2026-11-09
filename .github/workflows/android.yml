@@ -37,7 +37,7 @@ jobs:
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: SunCanvas-debug-apk
+          name: DayArc-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
@@ -47,10 +47,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           APK=$(ls app/build/outputs/apk/debug/*.apk | head -1)
-          mkdir -p /tmp/apkout && cp "$APK" /tmp/apkout/SunCanvas-debug.apk
+          mkdir -p /tmp/apkout && cp "$APK" /tmp/apkout/DayArc-debug.apk
           gh release delete debug-latest --yes --cleanup-tag || true
-          gh release create debug-latest /tmp/apkout/SunCanvas-debug.apk --prerelease \
-            --title "SunCanvas debug build" --notes "Latest debug APK built from ${GITHUB_SHA}." --target "${GITHUB_SHA}"
+          gh release create debug-latest /tmp/apkout/DayArc-debug.apk --prerelease \
+            --title "DayArc debug build" --notes "Latest debug APK built from ${GITHUB_SHA}." --target "${GITHUB_SHA}"
           cd /tmp/apkout
           git init -q -b apk
           git config user.name "github-actions"

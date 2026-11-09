@@ -8,8 +8,8 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-val brandAppId = providers.gradleProperty("suncanvas.applicationId").getOrElse("com.suncanvas.app")
-val brandName = providers.gradleProperty("suncanvas.appName").getOrElse("SunCanvas")
+val brandAppId = providers.gradleProperty("suncanvas.applicationId").getOrElse("com.dayarc.app")
+val brandName = providers.gradleProperty("suncanvas.appName").getOrElse("DayArc")
 
 android {
     namespace = "app.suncanvas"

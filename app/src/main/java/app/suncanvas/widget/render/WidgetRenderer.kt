@@ -1,5 +1,6 @@
 package app.suncanvas.widget.render
 
+import app.suncanvas.BuildConfig
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -91,7 +92,7 @@ class WidgetRenderer(context: Context) {
             if (spec.shape == WidgetShape.CORNER_ACCENT) painter.drawCornerAccent(c, geo, col.accent, spec.decorOpacity)
             painter.drawBorder(c, spec, geo, s)
             if (snap == null || zone == null) {
-                text("Open SunCanvas to choose a location", u, dp(13f), Role.LABEL, col.secondaryText, Align.CENTER)
+                text("Open ${BuildConfig.BRAND_NAME} to choose a location", u, dp(13f), Role.LABEL, col.secondaryText, Align.CENTER)
                 return
             }
             when (spec.layout) {
@@ -117,8 +118,8 @@ class WidgetRenderer(context: Context) {
         }
 
         fun description(): String {
-            val sn = snap ?: return "SunCanvas widget"
-            val z = zone ?: return "SunCanvas widget"
+            val sn = snap ?: return "${BuildConfig.BRAND_NAME} widget"
+            val z = zone ?: return "${BuildConfig.BRAND_NAME} widget"
             return "${city!!.title}: sunrise ${fmt.time(sn.today.sunrise, z)}, sunset ${fmt.time(sn.today.sunset, z)}"
         }
 

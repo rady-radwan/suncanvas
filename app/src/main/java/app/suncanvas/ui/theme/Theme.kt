@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.sp
 import app.suncanvas.R
 
 /* ----------------------------------------------------------------------------
- * SunCanvas design system
+ * DayArc design system
  *  Palette: deep navy night, warm white day, golden-amber primary, sunset-orange
  *  secondary, soft-blue tertiary. Display type: Space Grotesk. Text: Inter.
  *  Spacing on a 4-dp grid; corner radii 12 / 20 / 28.
