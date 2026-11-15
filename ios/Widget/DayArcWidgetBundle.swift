@@ -293,7 +293,7 @@ struct LockEntryView: View {
             case .sunTimes:
                 HStack(spacing: 8) { Label(rise, systemImage: "sunrise.fill"); Label(set, systemImage: "sunset.fill") }
                     .font(.system(size: 14, weight: .semibold)).labelStyle(TightLabel())
-                Text("Daylight \(Durations.hm(snap.today.dayLength))").font(.caption2)
+                Text("Daylight \(Durations.hm(snap.today.daylight))").font(.caption2)
             case .daylight:
                 if let rem = snap.remainingDaylight, let p = snap.daylightProgress {
                     Text("\(Durations.hm(rem)) of daylight left").font(.system(size: 13, weight: .semibold))

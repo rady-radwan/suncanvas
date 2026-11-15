@@ -24,6 +24,7 @@ enum Tab: Hashable { case home, cities, calendar, widgets, settings }
 
 struct RootView: View {
     @EnvironmentObject var model: AppModel
+    @Environment(\.colorScheme) private var systemScheme
     @State private var tab: Tab = {
         let a = ProcessInfo.processInfo.arguments
         guard let i = a.firstIndex(of: "-tab"), i + 1 < a.count else { return .home }
@@ -41,8 +42,8 @@ struct RootView: View {
                 SettingsView().tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
             }
             .preferredColorScheme(scheme(at: ctx.date))
+            .tint((scheme(at: ctx.date) ?? systemScheme) == .dark ? Palette.amber : Palette.amberDeep)
         }
-        .tint(Palette.amber)
         .overlay(alignment: .bottom) {
             if let t = model.toast { Toast(text: t) }
         }

@@ -182,8 +182,8 @@ struct HomeContent: View {
         let change = snap.daylightChange
         let changeText = abs(change) < 1 ? "Same as yesterday" : Durations.signedMinSec(change) + " vs yesterday"
         return LazyVGrid(columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)], spacing: 10) {
-            StatTile(label: "Day length", value: Durations.hm(today.dayLength), icon: "sun.max", tint: DS.sunrise(scheme), supporting: changeText)
-            StatTile(label: "Night length", value: Durations.hm(max(0, 86_400 - today.dayLength)), icon: "moon.stars", tint: DS.blue(scheme))
+            StatTile(label: "Day length", value: Durations.hm(today.daylight), icon: "sun.max", tint: DS.sunrise(scheme), supporting: changeText)
+            StatTile(label: "Night length", value: Durations.hm(max(0, today.dayLength - today.daylight)), icon: "moon.stars", tint: DS.blue(scheme))
             StatTile(label: "Noon elevation", value: String(format: "%.1f°", today.noonElevation), icon: "angle", tint: Palette.golden)
             StatTile(label: "Solar midnight", value: fmt.time(today.solarMidnight, zone), icon: "moon", tint: DS.blue(scheme))
         }
@@ -263,7 +263,7 @@ struct HomeContent: View {
                 HStack {
                     StatMini("Sunrise", fmt.time(t.sunrise, zone))
                     StatMini("Sunset", fmt.time(t.sunset, zone))
-                    StatMini("Day length", Durations.hm(t.dayLength))
+                    StatMini("Day length", Durations.hm(t.daylight))
                 }
             }
         }

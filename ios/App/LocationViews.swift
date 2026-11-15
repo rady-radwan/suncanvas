@@ -195,7 +195,7 @@ struct LocationDetailView: View {
                 Section("Today") {
                     LabeledRow(label: "Sunrise", value: fmt.time(snap.today.sunrise, loc.zone))
                     LabeledRow(label: "Sunset", value: fmt.time(snap.today.sunset, loc.zone))
-                    LabeledRow(label: "Day length", value: Durations.hm(snap.today.dayLength))
+                    LabeledRow(label: "Day length", value: Durations.hm(snap.today.daylight))
                     LabeledRow(label: "Solar noon", value: fmt.time(snap.today.solarNoon, loc.zone))
                 }
                 Section {

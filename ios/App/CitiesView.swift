@@ -93,7 +93,7 @@ struct CityRow: View {
                     if loc.isFavorite { Image(systemName: "heart.fill").font(.caption2).foregroundStyle(.pink) }
                     if loc.isDefault { Image(systemName: "star.fill").font(.caption2).foregroundStyle(Palette.golden) }
                 }
-                Text("↑ \(fmt.time(day.sunrise, loc.zone))   ↓ \(fmt.time(day.sunset, loc.zone))   \(Durations.hm(day.dayLength))")
+                Text("↑ \(fmt.time(day.sunrise, loc.zone))   ↓ \(fmt.time(day.sunset, loc.zone))   \(Durations.hm(day.daylight))")
                     .font(.caption).foregroundStyle(.secondary).monospacedDigit()
             }
             Spacer()

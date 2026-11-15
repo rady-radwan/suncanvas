@@ -16,7 +16,7 @@ struct DayPoint: Identifiable {
         let start = d.date.start(in: d.zone)
         rise = d.sunrise.map { $0.timeIntervalSince(start) / 3600 }
         set = d.sunset.map { $0.timeIntervalSince(start) / 3600 }
-        lengthH = d.dayLength / 3600
+        lengthH = d.daylight / 3600
     }
     var chartDate: Date { day.date.dateAtNoonUTC }
 }
@@ -101,7 +101,7 @@ struct DayDetail: View {
                         LabeledRow(label: e.type.label, value: fmt.time(e.date, loc.zone))
                     }
                     Divider().padding(.vertical, 4)
-                    LabeledRow(label: "Day length", value: Durations.hm(day.dayLength))
+                    LabeledRow(label: "Day length", value: Durations.hm(day.daylight))
                     LabeledRow(label: "Noon elevation", value: String(format: "%.1f°", day.noonElevation))
                     let prev = SolarService.shared.day(loc, date.adding(days: -1))
                     LabeledRow(label: "Change vs previous day", value: Durations.signedMinSec(day.daylight - prev.daylight))
@@ -140,7 +140,7 @@ struct WeekView: View {
                         HStack {
                             Text("\(fmt.weekday(d.date)) \(d.date.day)").frame(width: 70, alignment: .leading)
                                 .fontWeight(d.date == LocalDate(Date(), in: loc.zone) ? .bold : .regular)
-                            Spacer(); Text(fmt.time(d.sunrise, loc.zone)); Spacer(); Text(fmt.time(d.sunset, loc.zone)); Spacer(); Text(Durations.hm(d.dayLength))
+                            Spacer(); Text(fmt.time(d.sunrise, loc.zone)); Spacer(); Text(fmt.time(d.sunset, loc.zone)); Spacer(); Text(Durations.hm(d.daylight))
                         }
                         .font(.subheadline).monospacedDigit().padding(.vertical, 5)
                     }
@@ -187,7 +187,7 @@ struct MonthView: View {
     var body: some View {
         let first = LocalDate(year: anchor.year, month: anchor.month, day: 1)
         let days = SolarService.shared.range(loc, from: first, days: first.daysInMonth)
-        let maxLen = days.map(\.dayLength).max() ?? 1, minLen = days.map(\.dayLength).min() ?? 0
+        let maxLen = days.map(\.daylight).max() ?? 1, minLen = days.map(\.daylight).min() ?? 0
         let today = LocalDate(Date(), in: loc.zone)
         let fmt = model.formatter
         VStack(spacing: 12) {
@@ -201,7 +201,7 @@ struct MonthView: View {
                         }
                         ForEach(0..<(first.weekday - 1), id: \.self) { _ in Color.clear.frame(height: 52) }
                         ForEach(days, id: \.date) { d in
-                            let t = maxLen > minLen ? (d.dayLength - minLen) / (maxLen - minLen) : 0.5
+                            let t = maxLen > minLen ? (d.daylight - minLen) / (maxLen - minLen) : 0.5
                             Button { onPick(d.date) } label: {
                                 VStack(spacing: 1) {
                                     Text("\(d.date.day)").font(.subheadline.weight(d.date == today ? .bold : .regular))
@@ -226,12 +226,13 @@ struct MonthView: View {
                         if let r = p.rise { LineMark(x: .value("Day", p.id.day), y: .value("Hour", r), series: .value("Event", "Sunrise")).foregroundStyle(DS.sunrise(scheme)) }
                         if let s = p.set { LineMark(x: .value("Day", p.id.day), y: .value("Hour", s), series: .value("Event", "Sunset")).foregroundStyle(DS.sunset(scheme)) }
                     }
-                    .chartYAxis { AxisMarks { v in AxisGridLine(); AxisValueLabel { Text(String(format: "%.0fh", v.as(Double.self) ?? 0)) } } }
+                    .chartYScale(domain: 0...24)
+                    .chartYAxis { AxisMarks(values: [0, 6, 12, 18, 24]) { v in AxisGridLine(); AxisValueLabel { Text(String(format: "%.0fh", v.as(Double.self) ?? 0)) } } }
                     .frame(height: 170)
-                    let longest = days.max { $0.dayLength < $1.dayLength }, shortest = days.min { $0.dayLength < $1.dayLength }
+                    let longest = days.max { $0.daylight < $1.daylight }, shortest = days.min { $0.daylight < $1.daylight }
                     if let l = longest, let s = shortest {
-                        LabeledRow(label: "Longest day", value: "\(fmt.shortDate(l.date)) · \(Durations.hm(l.dayLength))")
-                        LabeledRow(label: "Shortest day", value: "\(fmt.shortDate(s.date)) · \(Durations.hm(s.dayLength))")
+                        LabeledRow(label: "Longest day", value: "\(fmt.shortDate(l.date)) · \(Durations.hm(l.daylight))")
+                        LabeledRow(label: "Shortest day", value: "\(fmt.shortDate(s.date)) · \(Durations.hm(s.daylight))")
                     }
                 }
             }
@@ -272,8 +273,8 @@ struct YearView: View {
                     .environment(\.timeZone, TimeZone(identifier: "UTC")!)
                     .frame(height: 170)
                     if let l = points.max(by: { $0.lengthH < $1.lengthH }), let s = points.min(by: { $0.lengthH < $1.lengthH }) {
-                        LabeledRow(label: "Longest day", value: "\(fmt.shortDate(l.id)) · \(Durations.hm(l.day.dayLength))")
-                        LabeledRow(label: "Shortest day", value: "\(fmt.shortDate(s.id)) · \(Durations.hm(s.day.dayLength))")
+                        LabeledRow(label: "Longest day", value: "\(fmt.shortDate(l.id)) · \(Durations.hm(l.day.daylight))")
+                        LabeledRow(label: "Shortest day", value: "\(fmt.shortDate(s.id)) · \(Durations.hm(s.day.daylight))")
                         let er = points.compactMap { p in p.rise.map { (p, $0) } }.min { $0.1 < $1.1 }
                         let ls = points.compactMap { p in p.set.map { (p, $0) } }.max { $0.1 < $1.1 }
                         if let e = er { LabeledRow(label: "Earliest sunrise", value: "\(fmt.shortDate(e.0.id)) · \(fmt.time(e.0.day.sunrise, loc.zone))") }
@@ -333,10 +334,10 @@ struct CompareView: View {
                     row("Sunrise", fmt.time(d1.sunrise, loc.zone), fmt.time(d2.sunrise, l2.zone))
                     row("Sunset", fmt.time(d1.sunset, loc.zone), fmt.time(d2.sunset, l2.zone))
                     row("Solar noon", fmt.time(d1.solarNoon, loc.zone), fmt.time(d2.solarNoon, l2.zone))
-                    row("Day length", Durations.hm(d1.dayLength), Durations.hm(d2.dayLength))
+                    row("Day length", Durations.hm(d1.daylight), Durations.hm(d2.daylight))
                     row("Noon elevation", String(format: "%.1f°", d1.noonElevation), String(format: "%.1f°", d2.noonElevation))
                     Divider().padding(.vertical, 6)
-                    let diff = d2.dayLength - d1.dayLength
+                    let diff = d2.daylight - d1.daylight
                     LabeledRow(label: "Difference", value: abs(diff) < 60 ? "About the same" : (diff > 0 ? "+" : "−") + Durations.hm(diff) + " daylight")
                 }
             }
