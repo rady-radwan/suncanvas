@@ -1,0 +1,94 @@
+name: iOS build
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'ios/**', '.github/workflows/ios.yml' ]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Core tests (solar engine, cities, widget designs)
+        working-directory: ios/DayArcCore
+        run: |
+          set -o pipefail
+          swift test 2>&1 | tee ../core-test.log | grep -E "error:|failed|passed|Executed" | head -80
+
+      - name: Generate Xcode project
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build (unsigned)
+        working-directory: ios
+        run: |
+          set -o pipefail
+          xcodebuild -project DayArc.xcodeproj -scheme DayArc -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build 2>&1 | tee build.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)|\*\* " | head -200
+
+      - name: Package IPA (ad-hoc signed with App Group entitlements for sideloading)
+        working-directory: ios
+        run: |
+          APP=build/Build/Products/Release-iphoneos/DayArc.app
+          codesign --force --sign - --entitlements Widget/DayArcWidget.entitlements "$APP/PlugIns/DayArcWidget.appex"
+          codesign --force --sign - --entitlements App/DayArc.entitlements "$APP"
+          mkdir -p Payload && cp -R "$APP" Payload/
+          zip -qry DayArc.ipa Payload
+          ls -la DayArc.ipa
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DayArc-ipa
+          path: ios/DayArc.ipa
+
+      - name: Publish IPA (ios-ipa branch + "ios-latest" release)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/ipaout && cp ios/DayArc.ipa /tmp/ipaout/DayArc.ipa
+          gh release delete ios-latest --yes --cleanup-tag || true
+          gh release create ios-latest /tmp/ipaout/DayArc.ipa --prerelease \
+            --title "DayArc for iPhone (install with Sideloadly)" \
+            --notes "Built from ${GITHUB_SHA}. See ios/README.md for install steps." --target "${GITHUB_SHA}"
+          cd /tmp/ipaout
+          git init -q -b ios-ipa
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "iOS IPA for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-ipa
+
+      - name: Publish logs on failure (ios-logs branch)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/logs
+          cp ios/build.log ios/core-test.log /tmp/logs/ 2>/dev/null || true
+          grep -n "error:" ios/build.log > /tmp/logs/errors.txt 2>/dev/null || true
+          grep -n -E "error:|XCTAssert|failed" ios/core-test.log > /tmp/logs/test-errors.txt 2>/dev/null || true
+          cd /tmp/logs
+          git init -q -b ios-logs
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "iOS logs for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-logs
