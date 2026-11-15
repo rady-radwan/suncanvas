@@ -121,13 +121,14 @@ jobs:
           xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/DayArc.app
           mkdir -p shots
           shoot() {
-            xcrun simctl launch --terminate-running-process "$UDID" com.dayarc.app -demo -tab "$1"; sleep 8
+            xcrun simctl launch --terminate-running-process "$UDID" com.dayarc.app -demo -tab "$1" $3; sleep 16
             PID=$(pgrep -f "DayArc.app/DayArc" | head -1)
             [ -n "$PID" ] && sample "$PID" 2 -file "shots/sample-$2.txt" >/dev/null 2>&1 || true
             xcrun simctl io "$UDID" screenshot "shots/$2.png"
           }
           xcrun simctl ui "$UDID" appearance light
           for t in home cities calendar widgets editor settings; do shoot $t "light-$t"; done
+          shoot cities light-worldclock -world
           xcrun simctl ui "$UDID" appearance dark
           for t in home cities widgets editor; do shoot $t "dark-$t"; done
           xcrun simctl spawn "$UDID" log show --last 3m --predicate 'process == "DayArc"' --style compact > shots/app.log 2>/dev/null || true

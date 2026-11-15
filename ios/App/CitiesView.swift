@@ -3,7 +3,7 @@ import DayArcCore
 
 struct CitiesView: View {
     @EnvironmentObject var model: AppModel
-    @State private var mode = 0
+    @State private var mode = ProcessInfo.processInfo.arguments.contains("-world") ? 1 : 0
     @State private var adding = false
     @State private var coords = false
 
