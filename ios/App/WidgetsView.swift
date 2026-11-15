@@ -107,6 +107,12 @@ struct WidgetsView: View {
                 WidgetEditorView(designId: t.designId, initial: t.spec).environmentObject(model)
             }
             .sheet(isPresented: $showGuide) { WidgetGuide() }
+            .onAppear {
+                let a = ProcessInfo.processInfo.arguments
+                if editing == nil, let i = a.firstIndex(of: "-tab"), i + 1 < a.count, a[i + 1] == "editor" {
+                    editing = EditorTarget(designId: nil, spec: WidgetTemplates.all[1].spec)
+                }
+            }
         }
     }
 

@@ -92,3 +92,52 @@ jobs:
           git config user.email "github-actions@users.noreply.github.com"
           git add -A && git commit -q -m "iOS logs for ${GITHUB_SHA}"
           git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-logs
+
+  screens:
+    runs-on: macos-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build for Simulator
+        working-directory: ios
+        run: |
+          brew install xcodegen
+          xcodegen generate
+          set -o pipefail
+          xcodebuild -project DayArc.xcodeproj -scheme DayArc -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO build 2>&1 | tee sim-build.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" | head -100
+      - name: Screenshots
+        working-directory: ios
+        run: |
+          UDID=$(xcrun simctl list devices available | grep -E "iPhone 1[5-7] Pro \(" | head -1 | grep -oE "[0-9A-F-]{36}")
+          [ -z "$UDID" ] && UDID=$(xcrun simctl list devices available | grep -E "iPhone" | head -1 | grep -oE "[0-9A-F-]{36}")
+          echo "Device $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl status_bar "$UDID" override --time 9:41 --batteryLevel 100 || true
+          xcrun simctl install "$UDID" build/Build/Products/Debug-iphonesimulator/DayArc.app
+          mkdir -p shots
+          shoot() { xcrun simctl launch --terminate-running-process "$UDID" com.dayarc.app -demo -tab "$1"; sleep 8; xcrun simctl io "$UDID" screenshot "shots/$2.png"; }
+          xcrun simctl ui "$UDID" appearance light
+          for t in home cities calendar widgets editor settings; do shoot $t "light-$t"; done
+          xcrun simctl ui "$UDID" appearance dark
+          for t in home cities widgets editor; do shoot $t "dark-$t"; done
+          xcrun simctl spawn "$UDID" log show --last 3m --predicate 'process == "DayArc"' --style compact > shots/app.log 2>/dev/null || true
+          ls -la shots
+      - name: Publish screenshots (ios-renders branch)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p /tmp/out && cp -R ios/shots/. /tmp/out/ 2>/dev/null || true
+          cp ios/sim-build.log /tmp/out/ 2>/dev/null || true
+          grep -n "error:" ios/sim-build.log > /tmp/out/errors.txt 2>/dev/null || true
+          cd /tmp/out
+          git init -q -b ios-renders
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A && git commit -q -m "iOS screenshots for ${GITHUB_SHA}"
+          git push -q -f "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" ios-renders

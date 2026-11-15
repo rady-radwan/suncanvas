@@ -24,7 +24,12 @@ enum Tab: Hashable { case home, cities, calendar, widgets, settings }
 
 struct RootView: View {
     @EnvironmentObject var model: AppModel
-    @State private var tab: Tab = .home
+    @State private var tab: Tab = {
+        let a = ProcessInfo.processInfo.arguments
+        guard let i = a.firstIndex(of: "-tab"), i + 1 < a.count else { return .home }
+        let names: [String: Tab] = ["home": .home, "cities": .cities, "calendar": .calendar, "widgets": .widgets, "editor": .widgets, "settings": .settings]
+        return names[a[i + 1]] ?? .home
+    }()
 
     var body: some View {
         TimelineView(.everyMinute) { ctx in

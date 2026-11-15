@@ -17,6 +17,20 @@ final class AppModel: ObservableObject {
 
     let location = LocationService()
 
+    /// CI screenshot mode (`-demo`): seeds a few cities so screens can be captured without interaction.
+    init() {
+        guard ProcessInfo.processInfo.arguments.contains("-demo"), locations.isEmpty else { return }
+        for (i, n) in ["Detroit", "London", "Tokyo", "Cairo", "Sydney"].enumerated() {
+            guard let c = CityDatabase.shared.search(n, limit: 1).first else { continue }
+            var l = c.toLocation(); l.sortOrder = i; l.isDefault = i == 0; l.isFavorite = i == 1
+            locations.append(l)
+        }
+        settings.activeLocationId = locations.first?.id
+        settings.onboardingDone = true
+        designs = [SavedDesign(spec: WidgetPalettes.all[2].apply(to: WidgetTemplates.all[3].spec))]
+        SharedStore.saveLocations(locations); SharedStore.saveSettings(settings); SharedStore.saveDesigns(designs)
+    }
+
     var active: SavedLocation? { SharedStore.resolveLocation(settings.activeLocationId, in: locations) }
     var formatter: TimeFormatter { settings.formatter }
     var cityList: [SavedLocation] { locations.filter { $0.inCityList } }
