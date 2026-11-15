@@ -32,18 +32,23 @@ struct RootView: View {
         return names[a[i + 1]] ?? .home
     }()
 
+    @State private var minute = Date()
+    private let ticker = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+
     var body: some View {
-        TimelineView(.everyMinute) { ctx in
-            TabView(selection: $tab) {
+        let chosen = scheme(at: minute)
+        TabView(selection: $tab) {
                 HomeView().tabItem { Label("Today", systemImage: "sun.horizon") }.tag(Tab.home)
                 CitiesView().tabItem { Label("Cities", systemImage: "globe") }.tag(Tab.cities)
                 CalendarScreen().tabItem { Label("Calendar", systemImage: "calendar") }.tag(Tab.calendar)
                 WidgetsView().tabItem { Label("Widgets", systemImage: "square.grid.2x2") }.tag(Tab.widgets)
                 SettingsView().tabItem { Label("Settings", systemImage: "gearshape") }.tag(Tab.settings)
             }
-            .preferredColorScheme(scheme(at: ctx.date))
-            .tint((scheme(at: ctx.date) ?? systemScheme) == .dark ? Palette.amber : Palette.amberDeep)
-        }
+        .preferredColorScheme(chosen)
+        .tint((chosen ?? systemScheme) == .dark ? Palette.amber : Palette.amberDeep)
+        // Only the automatic sunrise/sunset theme needs a clock; other modes never re-render on the timer.
+        .onReceive(ticker) { d in if model.settings.themeMode == .sun { minute = d } }
+        .onChange(of: model.settings.themeMode) { _, _ in minute = Date() }
         .overlay(alignment: .bottom) {
             if let t = model.toast { Toast(text: t) }
         }
